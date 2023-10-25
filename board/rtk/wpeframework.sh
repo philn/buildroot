@@ -27,6 +27,10 @@ if [ ! -f /usr/lib/libGLESv2.so.2 ]; then
         ln -s /usr/lib/libGLESv2.so /usr/lib/libGLESv2.so.2
 fi
 
+if [ ! -f /usr/lib/libwesteros_render_gl.so ]; then
+        ln -s /usr/lib/libwesteros_render_gl.so.0 /usr/lib/libwesteros_render_gl.so
+fi
+
 if [ ! -d /usr/libexec/wpe-webkit-1.0 ]; then
 	ln -s $SOURCE/usr/libexec/wpe-webkit-1.0 /usr/libexec/wpe-webkit-1.0
 fi
