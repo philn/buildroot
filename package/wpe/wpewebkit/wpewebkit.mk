@@ -149,7 +149,7 @@ WPEWEBKIT_CONF_OPTS += \
 	-DENABLE_ENCRYPTED_MEDIA=ON \
 	-DENABLE_MEDIA_STATISTICS=ON \
 	-DENABLE_WEB_AUDIO=ON
-WPEWEBKIT_DEPENDENCIES += gstreamer1 gst1-plugins-base gst1-plugins-good
+WPEWEBKIT_DEPENDENCIES += gstreamer1 gst1-plugins-base gst1-plugins-good gst1-plugins-bad
 
 ifeq ($(BR2_PACKAGE_WPEFRAMEWORK_CLIENTLIBRARIES)$(BR2_PACKAGE_WPEFRAMEWORK_CDM),yy)
 WPEWEBKIT_DEPENDENCIES += wpeframework-clientlibraries
