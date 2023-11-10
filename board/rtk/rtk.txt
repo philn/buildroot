@@ -7,6 +7,7 @@ WPEProcess
 libz.so
 libnettle.so
 libcairo.so
+libcairo-gobject.so
 libcares.so
 libevdev.so
 libfaad.so
