@@ -1,0 +1,43 @@
+
+name: RPI-Makefile-CI
+
+on:
+  push:
+    branches: R4
+  pull_request:
+    branches: R4
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+     
+    - uses: actions/checkout@v3
+    - run:
+        git config --global user.email "divdus@gmail.com" && git config --global user.name "Divya-563"
+   
+    - name: configure
+      run: make raspberrypi3_wpe_ml_defconfig
+
+    - name: Compile
+      run: make
+    
+    - name: Get Time
+      id: time
+      uses: nanzm/get-time-action@v1.1
+      with:
+          format: 'YYYY-MM-DD-HH-mm-ss'
+        
+    - name: Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: images_${{ steps.time.outputs.time }}"
+        path: output/images/
+        
+    
+        
+       
+   
+
