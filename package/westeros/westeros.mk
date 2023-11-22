@@ -3,9 +3,9 @@
 # westeros
 #
 ################################################################################
-WESTEROS_VERSION = 380015778c45e7f26406f22a063bd259a7dece46
+WESTEROS_VERSION = rdkv-2023q3-dunfell
 WESTEROS_SITE_METHOD = git
-WESTEROS_SITE = https://github.com/rdkcmf/westeros
+WESTEROS_SITE = https://code.rdkcentral.com/r/components/opensource/westeros
 WESTEROS_INSTALL_STAGING = YES
 
 WESTEROS_DEPENDENCIES = host-pkgconf host-autoconf wayland \

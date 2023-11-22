@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-WESTEROS_SINK_VERSION = 380015778c45e7f26406f22a063bd259a7dece46
+WESTEROS_SINK_VERSION = rdkv-2023q3-dunfell
 WESTEROS_SINK_SITE_METHOD = git
-WESTEROS_SINK_SITE = https://github.com/rdkcmf/westeros
+WESTEROS_SINK_SITE = https://code.rdkcentral.com/r/components/opensource/westeros
 WESTEROS_SINK_INSTALL_STAGING = YES
 WESTEROS_SINK_AUTORECONF = YES
 WESTEROS_SINK_AUTORECONF_OPTS = "-Icfg"
