@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-COBALT_VERSION = a772cccf1da68623f3312bb8466860e2d1964f24
+COBALT_VERSION = e8de452e20f69557c4f6c80ca9abcf2689be3832 
 COBALT_SITE_METHOD = git
 COBALT_SITE = git@github.com:Metrological/cobalt
 COBALT_INSTALL_STAGING = YES
@@ -58,7 +58,7 @@ export COBALT_EXECUTABLE_TYPE = executable
 endif
 
 ifeq ($(BR2_PACKAGE_COBALT_USE_WPEFRAMEWORK_DATA_PATH), y)
-export COBALT_DATA_PATH = $(subst ",,$(BR2_PACKAGE_WPEFRAMEWORK_DATA_PATH)")/Cobalt
+export COBALT_DATA_PATH = $(subst ",,$(BR2_PACKAGE_WPEFRAMEWORK_INSTALL_PATH)")/Cobalt
 COBALT_DATA_INSTALL_PATH = $(TARGET_DIR)/$(COBALT_DATA_PATH)
 COBALT_DATA_SRC_PATH = content/data/*
 else
