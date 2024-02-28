@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WPEFRAMEWORK_NETFLIX_VERSION = 9c76ed429f2ba4b876950cfd66afecb0ed9bf99d
+WPEFRAMEWORK_NETFLIX_VERSION = R4.4.1
 ifeq ($(BR2_PACKAGE_NETFLIX50),y)
 WPEFRAMEWORK_NETFLIX_CONF_OPTS += -DNETFLIX_VERSION_5=true
 WPEFRAMEWORK_NETFLIX_CONF_OPTS += -DNETFLIX_VERSION_5_0=true
@@ -24,11 +24,6 @@ endif
 WPEFRAMEWORK_NETFLIX_SITE_METHOD = git
 WPEFRAMEWORK_NETFLIX_SITE = git@github.com:WebPlatformForEmbedded/WPEPluginNetflix.git
 WPEFRAMEWORK_NETFLIX_INSTALL_STAGING = YES
-
-ifeq ($(BR2_CMAKE_HOST_DEPENDENCY),)
-WPEFRAMEWORK_NETFLIX_CONF_OPTS += \
-       -DCMAKE_MODULE_PATH=$(HOST_DIR)/share/cmake/Modules
-endif
 
 # wpeframework-netflix binary package config
 WPEFRAMEWORK_NETFLIX_OPKG_NAME = "wpeframework-netflix"
