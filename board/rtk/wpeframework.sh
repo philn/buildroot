@@ -5,7 +5,7 @@ export LD_LIBRARY_PATH=$SOURCE/usr/lib:$SOURCE/lib:/lib:/usr/lib:/usr/lib/realte
 export LD_PRELOAD=/usr/lib/libwayland-client.so.0:/usr/lib/realtek/libVOutWrapper.so:/usr/lib/realtek/libjpu.so:/usr/lib/realtek/libvpu.so:/usr/lib/libwesteros_gl.so.0
 export PATH=$SOURCE/usr/bin:$PATH
 export GST_PLUGIN_SCANNER=$GST_PLUGIN_SCANNER:$SOURCE/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-export GST_PLUGIN_SYSTEM_PATH=$GST_PLUGIN_SYSTEM_PATH:$SOURCE/usr/lib/gstreamer-1.0
+export GST_PLUGIN_SYSTEM_PATH=$GST_PLUGIN_SYSTEM_PATH:$SOURCE/usr/lib/gstreamer-1.0:/usr/lib/gstreamer-1.0
 
 export WAYLAND_DISPLAY=wayland-0
 export XDG_RUNTIME_DIR=/tmp
