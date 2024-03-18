@@ -213,4 +213,12 @@ endef
 GST1_BCM_POST_INSTALL_TARGET_HOOKS += CREATE_BINARY_ML_DELIVERY_GST1_BCM
 endif
 
+ifeq ($(BR2_GCC_VERSION_10_X),y)
+define GST1_BCM_APPLY_GCC10_EXTRA_PATCHES_POST_HOOK
+        cd $(@D) && { for P in ../../../package/gstreamer1/gst1-bcm/gcc-10/*.patch; do patch -p1 < "$$P" ; done; }
+endef
+endif
+
+GST1_BCM_POST_PATCH_HOOKS += GST1_BCM_APPLY_GCC10_EXTRA_PATCHES_POST_HOOK
+
 $(eval $(autotools-package))
