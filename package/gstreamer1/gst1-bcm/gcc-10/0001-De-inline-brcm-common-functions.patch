@@ -1,0 +1,181 @@
+From 24c0304b295d367ebefba99225fc5241fcb0969c Mon Sep 17 00:00:00 2001
+From: Xabier Rodriguez Calvar <calvaris@igalia.com>
+Date: Mon, 18 Mar 2024 13:25:31 +0100
+Subject: [PATCH] De-inline brcm common functions
+
+This creates symbols issues with GCC when loading plugins
+---
+ reference/util/src/Makefile.am       |  1 +
+ reference/util/src/gst_brcm_common.c | 87 ++++++++++++++++++++++++++++
+ reference/util/src/gst_brcm_common.h | 49 ++--------------
+ 3 files changed, 92 insertions(+), 45 deletions(-)
+ create mode 100644 reference/util/src/gst_brcm_common.c
+
+diff --git a/reference/util/src/Makefile.am b/reference/util/src/Makefile.am
+index 3158f37..faf46ce 100755
+--- a/reference/util/src/Makefile.am
++++ b/reference/util/src/Makefile.am
+@@ -63,6 +63,7 @@ libbrcmgstutil_la_SOURCES += gst_brcm_asyncthread.c
+ libbrcmgstutil_la_SOURCES += gst_brcm_buflog.c
+ libbrcmgstutil_la_SOURCES += gst_brcm_timetrk.c
+ libbrcmgstutil_la_SOURCES += gst_brcm_shared.c
++libbrcmgstutil_la_SOURCES += gst_brcm_common.c
+ libbrcmgstutil_la_LDFLAGS = $(AM_LDFLAGS)
+ libbrcmgstutil_la_LDFLAGS += -module -avoid-version
+ if ENABLE_SVP_META
+diff --git a/reference/util/src/gst_brcm_common.c b/reference/util/src/gst_brcm_common.c
+new file mode 100644
+index 0000000..01ffab7
+--- /dev/null
++++ b/reference/util/src/gst_brcm_common.c
+@@ -0,0 +1,87 @@
++/******************************************************************************
++ *  Copyright (C) 2017 Broadcom. The term "Broadcom" refers to Broadcom Limited and/or its subsidiaries.
++ *
++ *  This program is the proprietary software of Broadcom and/or its licensors,
++ *  and may only be used, duplicated, modified or distributed pursuant to the terms and
++ *  conditions of a separate, written license agreement executed between you and Broadcom
++ *  (an "Authorized License").  Except as set forth in an Authorized License, Broadcom grants
++ *  no license (express or implied), right to use, or waiver of any kind with respect to the
++ *  Software, and Broadcom expressly reserves all rights in and to the Software and all
++ *  intellectual property rights therein.  IF YOU HAVE NO AUTHORIZED LICENSE, THEN YOU
++ *  HAVE NO RIGHT TO USE THIS SOFTWARE IN ANY WAY, AND SHOULD IMMEDIATELY
++ *  NOTIFY BROADCOM AND DISCONTINUE ALL USE OF THE SOFTWARE.
++ *
++ *  Except as expressly set forth in the Authorized License,
++ *
++ *  1.     This program, including its structure, sequence and organization, constitutes the valuable trade
++ *  secrets of Broadcom, and you shall use all reasonable efforts to protect the confidentiality thereof,
++ *  and to use this information only in connection with your use of Broadcom integrated circuit products.
++ *
++ *  2.     TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
++ *  AND WITH ALL FAULTS AND BROADCOM MAKES NO PROMISES, REPRESENTATIONS OR
++ *  WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT TO
++ *  THE SOFTWARE.  BROADCOM SPECIFICALLY DISCLAIMS ANY AND ALL IMPLIED WARRANTIES
++ *  OF TITLE, MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A PARTICULAR PURPOSE,
++ *  LACK OF VIRUSES, ACCURACY OR COMPLETENESS, QUIET ENJOYMENT, QUIET POSSESSION
++ *  OR CORRESPONDENCE TO DESCRIPTION. YOU ASSUME THE ENTIRE RISK ARISING OUT OF
++ *  USE OR PERFORMANCE OF THE SOFTWARE.
++ *
++ *  3.     TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL BROADCOM OR ITS
++ *  LICENSORS BE LIABLE FOR (i) CONSEQUENTIAL, INCIDENTAL, SPECIAL, INDIRECT, OR
++ *  EXEMPLARY DAMAGES WHATSOEVER ARISING OUT OF OR IN ANY WAY RELATING TO YOUR
++ *  USE OF OR INABILITY TO USE THE SOFTWARE EVEN IF BROADCOM HAS BEEN ADVISED OF
++ *  THE POSSIBILITY OF SUCH DAMAGES; OR (ii) ANY AMOUNT IN EXCESS OF THE AMOUNT
++ *  ACTUALLY PAID FOR THE SOFTWARE ITSELF OR U.S. $1, WHICHEVER IS GREATER. THESE
++ *  LIMITATIONS SHALL APPLY NOTWITHSTANDING ANY FAILURE OF ESSENTIAL PURPOSE OF
++ *  ANY LIMITED REMEDY.
++ ******************************************************************************/
++
++/*
++    common utilities
++*/
++
++#include "gst_brcm_common.h"
++
++guint8 *BRCM_GST_BUFFER_DATA(GstBuffer *buf, gboolean writable) {
++  GstMapInfo map;
++  guint8 *buf_ptr;
++
++  gst_buffer_map(buf, &map, writable ? GST_MAP_WRITE : GST_MAP_READ);
++  buf_ptr = map.data;
++  gst_buffer_unmap(buf, &map);
++
++  return buf_ptr;
++}
++
++guint32 BRCM_GST_BUFFER_SIZE(GstBuffer *buf, gboolean writable) {
++  GstMapInfo map;
++  guint32 buf_length;
++
++  gst_buffer_map(buf, &map, writable ? GST_MAP_WRITE : GST_MAP_READ);
++  buf_length = map.size;
++  gst_buffer_unmap(buf, &map);
++
++  return buf_length;
++}
++
++gboolean BRCM_GST_BUFFER_GET(GstBuffer *buf, gboolean writable,
++                             guint8 **buf_ptr, guint32 *buf_length) {
++  GstMapInfo map;
++  gboolean ret;
++
++  ret = gst_buffer_map(buf, &map, writable ? GST_MAP_WRITE : GST_MAP_READ);
++  if (!ret) {
++    return FALSE;
++  }
++  *buf_ptr = map.data;
++  *buf_length = map.size;
++  gst_buffer_unmap(buf, &map);
++
++  return TRUE;
++}
++
++double BRCM_GST_GET_SYSTEMTIME(void) {
++  struct timespec ts;
++  clock_gettime(CLOCK_MONOTONIC, &ts);
++  return ts.tv_sec + ts.tv_nsec / 1000000000.0;
++}
+diff --git a/reference/util/src/gst_brcm_common.h b/reference/util/src/gst_brcm_common.h
+index fdc6230..92eb120 100755
+--- a/reference/util/src/gst_brcm_common.h
++++ b/reference/util/src/gst_brcm_common.h
+@@ -315,51 +315,10 @@ G_BEGIN_DECLS
+ #define RUNTIME_EXTRA_PICTURE_BUFFERS_SUPPORTED (0)
+ #endif
+ 
+-inline guint8 *BRCM_GST_BUFFER_DATA(GstBuffer * buf, gboolean writable)
+-{
+-    GstMapInfo map;
+-    guint8 *buf_ptr;
+-
+-    gst_buffer_map (buf, &map, writable?GST_MAP_WRITE:GST_MAP_READ);
+-    buf_ptr = map.data;
+-    gst_buffer_unmap (buf, &map);
+-
+-    return buf_ptr;
+-}
+-
+-inline guint32 BRCM_GST_BUFFER_SIZE(GstBuffer * buf, gboolean writable)
+-{
+-    GstMapInfo map;
+-    guint32 buf_length;
+-
+-    gst_buffer_map (buf, &map, writable?GST_MAP_WRITE:GST_MAP_READ);
+-    buf_length = map.size;
+-    gst_buffer_unmap (buf, &map);
+-
+-    return buf_length;
+-}
+-
+-inline gboolean BRCM_GST_BUFFER_GET(GstBuffer * buf, gboolean writable, guint8 **buf_ptr, guint32 *buf_length)
+-{
+-    GstMapInfo map;
+-    gboolean ret;
+-
+-    ret = gst_buffer_map (buf, &map, writable?GST_MAP_WRITE:GST_MAP_READ);
+-    if (!ret) {
+-        return FALSE;
+-    }
+-    *buf_ptr = map.data;
+-    *buf_length = map.size;
+-    gst_buffer_unmap (buf, &map);
+-
+-    return TRUE;
+-}
+-
+-static inline double BRCM_GST_GET_SYSTEMTIME (void) {
+-   struct timespec ts;
+-   clock_gettime(CLOCK_MONOTONIC, &ts);
+-   return ts.tv_sec + ts.tv_nsec/1000000000.0;
+-}
++guint8 *BRCM_GST_BUFFER_DATA (GstBuffer * buf, gboolean writable);
++guint32 BRCM_GST_BUFFER_SIZE (GstBuffer * buf, gboolean writable);
++gboolean BRCM_GST_BUFFER_GET (GstBuffer * buf, gboolean writable, guint8 **buf_ptr, guint32 *buf_length);
++double BRCM_GST_GET_SYSTEMTIME (void);
+ 
+ G_END_DECLS
+ 
+-- 
+2.43.0
+
