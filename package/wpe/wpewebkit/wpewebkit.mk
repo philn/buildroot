@@ -24,6 +24,15 @@ WPEWEBKIT_VERSION_VALUE = 2.42
 WPEWEBKIT_VERSION = b185c720a2fea17e6afd6a8b56fe58a070c60a94
 endif
 
+ifeq ($(BR2_PACKAGE_WPEWEBKIT_NEXT),y)
+WPEWEBKIT_VERSION_VALUE = main
+# This is meant to build main from the WebKit repository, but we won't have main on
+# WebPlatformForEmbedded/WPEWebKit repo, so whatever hash we put will fail to download.
+# Give this this a value to indicate that the fail is expected. This version is intended
+# to be used with a local checkout of the WebKit repository.
+WPEWEBKIT_VERSION = invalidhashtofail
+endif
+
 WPEWEBKIT_SITE = $(call github,WebPlatformForEmbedded,WPEWebKit,$(WPEWEBKIT_VERSION))
 
 WPEWEBKIT_INSTALL_STAGING = YES
@@ -120,7 +129,7 @@ endif
 
 endif
 
-ifeq ($(BR2_PACKAGE_WPEWEBKIT2_28)$(BR2_PACKAGE_WPEWEBKIT2_38)$(BR2_PACKAGE_WPEWEBKIT2_42),y)
+ifeq ($(BR2_PACKAGE_WPEWEBKIT2_28)$(BR2_PACKAGE_WPEWEBKIT2_38)$(BR2_PACKAGE_WPEWEBKIT2_42)$(BR2_PACKAGE_WPEWEBKIT_NEXT),y)
 
 WPEWEBKIT_CONF_OPTS += \
 	-DENABLE_ACCESSIBILITY=OFF \
@@ -140,6 +149,18 @@ WPEWEBKIT_CONF_OPTS += \
 	-DUSE_AVIF=OFF \
 	-DUSE_GBM=OFF \
 	-DUSE_GSTREAMER_TRANSCODER=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_WPEWEBKIT_NEXT),y)
+WPEWEBKIT_CONF_OPTS += \
+	-DUSE_JPEGXL=OFF \
+	-DUSE_AVIF=OFF \
+	-DUSE_GBM=OFF \
+	-DUSE_GSTREAMER_TRANSCODER=OFF \
+	-DENABLE_WPE_1_1_API=ON \
+	-DUSE_ATK=OFF \
+	-DUSE_LIBBACKTRACE=OFF \
+	-DUSE_LIBDRM=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_WPEWEBKIT_MULTIMEDIA),y)
@@ -183,7 +204,7 @@ endif
 
 endif
 
-ifeq ($(BR2_PACKAGE_WPEWEBKIT2_38)$(BR2_PACKAGE_WPEWEBKIT2_42),y)
+ifeq ($(BR2_PACKAGE_WPEWEBKIT2_38)$(BR2_PACKAGE_WPEWEBKIT2_42)$(BR2_PACKAGE_WPEWEBKIT_NEXT),y)
 WPEWEBKIT_CONF_OPTS += \
 	-DENABLE_GAMEPAD=ON \
 	-DENABLE_INTROSPECTION=OFF \
