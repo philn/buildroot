@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-WESTEROS_SOC_VERSION = 23a65d1fa48f6d82d51c3cb6cd08bf403f95187d
+WESTEROS_SOC_VERSION = 28fc6542df897c184d247e83972ac952273d8058
 WESTEROS_SOC_SITE_METHOD = git
-WESTEROS_SOC_SITE = https://github.com/rdkcmf/westeros
+WESTEROS_SOC_SITE = https://code.rdkcentral.com/r/components/opensource/westeros
 WESTEROS_SOC_INSTALL_STAGING = YES
 
 WESTEROS_SOC_DEPENDENCIES = host-pkgconf host-autoconf wayland libegl
@@ -17,8 +17,8 @@ endif
 
 WESTEROS_SOC_CONF_OPTS += \
 	--prefix=/usr/ \
-    --disable-silent-rules \
-    --disable-dependency-tracking \
+	--disable-silent-rules \
+	--disable-dependency-tracking \
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	WESTEROS_SOC_CONF_OPTS += CFLAGS="$(TARGET_CFLAGS) -I ${STAGING_DIR}/usr/include/interface/vmcs_host/linux/"
@@ -26,15 +26,17 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 else ifeq ($(BR2_PACKAGE_HAS_NEXUS),y)
 	WESTEROS_SOC_MAKE_ENV += \
 		$(BCM_REFSW_MAKE_ENV) \
-        REFSW_VERSION="$(STAGING_DIR)/usr/share/wayland-egl" \
+		REFSW_VERSION="$(STAGING_DIR)/usr/share/wayland-egl" \
 		PKG_CONFIG_SYSROOT_DIR=$(STAGING_DIR)
 	WESTEROS_SOC_CONF_OPTS += \
-        --enable-vc5 \
-        --enable-nxclient_local=yes \
-		CFLAGS="$(TARGET_CFLAGS) -I ${STAGING_DIR}/usr/include/refsw/" \
-		CXXFLAGS="$(TARGET_CXXFLAGS) -I ${STAGING_DIR}/usr/include/refsw/"
+		--enable-vc5 \
+		--enable-nxclient_local=no \
+		CFLAGS="$(TARGET_CFLAGS) -I${STAGING_DIR}/usr/include/refsw/ -I$(STAGING_DIR)/usr/share/wayland-egl" \
+		CXXFLAGS="$(TARGET_CXXFLAGS) -DEMBEDDED_SETTOP_BOX=1 -DPLATFORM_HAS_NEXUS=1 -DFORCE_1080 -I${STAGING_DIR}/usr/include/refsw/"
 	WESTEROS_SOC_SUBDIR = brcm
-    WESTEROS_SOC_DEPENDENCIES += wayland-egl-bnxs bcm-refsw
+ifeq ($(BR2_PACKAGE_BCM_REFSW),y)
+	WESTEROS_SOC_DEPENDENCIES += wayland-egl-bnxs bcm-refsw
+endif
 else ifeq ($(BR2_PACKAGE_LIBDRM),y)
 ifeq ($(BR2_PACKAGE_RPI_FIRMWARE_VARIANT_PI4),y)
 	WESTEROS_DRM_CARD=/dev/dri/card1

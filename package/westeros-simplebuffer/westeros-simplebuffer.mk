@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-WESTEROS_SIMPLEBUFFER_VERSION = 23a65d1fa48f6d82d51c3cb6cd08bf403f95187d
+WESTEROS_SIMPLEBUFFER_VERSION = 28fc6542df897c184d247e83972ac952273d8058
 WESTEROS_SIMPLEBUFFER_SITE_METHOD = git
-WESTEROS_SIMPLEBUFFER_SITE = https://github.com/rdkcmf/westeros
+WESTEROS_SIMPLEBUFFER_SITE = https://code.rdkcentral.com/r/components/opensource/westeros
 WESTEROS_SIMPLEBUFFER_INSTALL_STAGING = YES
 WESTEROS_SIMPLEBUFFER_SUBDIR = simplebuffer/
 WESTEROS_SIMPLEBUFFER_AUTORECONF = YES

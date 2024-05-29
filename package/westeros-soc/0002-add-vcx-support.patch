@@ -1,8 +1,8 @@
 diff --git a/brcm/Makefile.am b/brcm/Makefile.am
-index 2bfc998..4bebec0 100644
+index 06e7d5d..74d3290 100644
 --- a/brcm/Makefile.am
 +++ b/brcm/Makefile.am
-@@ -35,6 +35,16 @@ AM_CFLAGS = -DUSE_WESTEROS $(NEXUS_CFLAGS) $(NXCLIENT_CFLAGS) -I$(ROCKFORD_TOP)/
+@@ -35,6 +35,17 @@ AM_CFLAGS = -DUSE_WESTEROS $(NEXUS_CFLAGS) $(NXCLIENT_CFLAGS) -I$(ROCKFORD_TOP)/
  
  AM_LDFLAGS = 
  
@@ -11,7 +11,8 @@ index 2bfc998..4bebec0 100644
 +    -DVCX=5 \
 +    -I${PKG_CONFIG_SYSROOT_DIR}/usr/include/interface/khronos/include \
 +    -I${PKG_CONFIG_SYSROOT_DIR}/usr/include/interface/khronos/include/bcg_abstract \
-+    -I${PKG_CONFIG_SYSROOT_DIR}/usr/include/vcos/include
++    -I${PKG_CONFIG_SYSROOT_DIR}/usr/share/wayland-egl \
++    -I${PKG_CONFIG_SYSROOT_DIR}/usr/share/wayland-egl/libs/util/vcos/include
 +else
 +AM_CFLAGS += -DVCX=3
 +endif
@@ -20,10 +21,10 @@ index 2bfc998..4bebec0 100644
  
  libwesteros_gl_la_SOURCES = westeros-gl/westeros-gl.cpp
 diff --git a/brcm/configure.ac b/brcm/configure.ac
-index f18567f..78fa91e 100644
+index 02a5c8d..51d5d2d 100644
 --- a/brcm/configure.ac
 +++ b/brcm/configure.ac
-@@ -60,6 +60,21 @@ PKG_CHECK_MODULES([WAYLAND_SERVER],[wayland-server >= 1.6.0])
+@@ -74,6 +74,21 @@ PKG_CHECK_MODULES([WAYLAND_SERVER],[wayland-server >= 1.6.0])
  WAYLANDLIB="-lwayland-client"
  AC_SUBST(WAYLANDLIB)
  

@@ -1,0 +1,118 @@
+From e5a10b561aae3d8ac99b070d56e1ae9d26a3dd50 Mon Sep 17 00:00:00 2001
+From: modeveci <o.deveci@metrological.com>
+Date: Fri, 16 Jun 2023 07:57:16 +0000
+Subject: [PATCH] Build provisioning for nexus widevine
+
+---
+ Provisioning/cmake/FindNexusWidevine.cmake    | 80 +++++++++++++++++++
+ .../WidevineProvisioning/CMakeLists.txt       | 13 ++-
+ 2 files changed, 92 insertions(+), 1 deletion(-)
+ create mode 100644 Provisioning/cmake/FindNexusWidevine.cmake
+
+diff --git a/Provisioning/cmake/FindNexusWidevine.cmake b/Provisioning/cmake/FindNexusWidevine.cmake
+new file mode 100644
+index 0000000..ecd52bc
+--- /dev/null
++++ b/Provisioning/cmake/FindNexusWidevine.cmake
+@@ -0,0 +1,80 @@
++# - Try to find Broadcom Nexus Widevine.
++# Once done this will define
++#  NexusWidevine_FOUND     - System has a Nexus Widevine
++#  NexusWidevine::NexusWidevine - The Nexus Widevine library
++#
++# Copyright (C) 2019 Metrological B.V
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions
++# are met:
++# 1.  Redistributions of source code must retain the above copyright
++#     notice, this list of conditions and the following disclaimer.
++# 2.  Redistributions in binary form must reproduce the above copyright
++#     notice, this list of conditions and the following disclaimer in the
++#     documentation and/or other materials provided with the distribution.
++#
++# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND ITS CONTRIBUTORS ``AS
++# IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
++# THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR ITS
++# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
++# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
++# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
++# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
++# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
++# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++
++find_path(LIBNexusWidevine_INCLUDE_DIR cdm.h
++        PATH_SUFFIXES widevine refsw openssl)
++
++find_path(LIBNexusSVP_INCLUDE_DIR sage_srai.h
++        PATH_SUFFIXES refsw)
++
++set(LIBNexusWidevine_DEFINITIONS "")
++
++list(APPEND LIBNexusWidevine_INCLUDE_DIRS ${LIBNexusWidevine_INCLUDE_DIR} ${LIBNexusSVP_INCLUDE_DIR})
++
++# main lib
++find_library(LIBNexusWidevine_LIBRARY widevine_ce_cdm_shared)
++
++if(NOT LIBNexusWidevine_LIBRARY)
++    find_library(LIBNexusWidevine_LIBRARY wvcdm)
++endif()
++
++# needed libs
++list(APPEND NeededLibs protobuf-lite cmndrm cmndrm_tl crypto oemcrypto_tl)
++
++# needed svp libs
++list(APPEND NeededLibs drmrootfs srai)
++
++foreach (_library ${NeededLibs})
++    find_library(LIBRARY_${_library} ${_library})
++    if(NOT EXISTS "${LIBRARY_${_library}}")
++        message(SEND_ERROR "Could not find mandatory library: ${_library}")
++    endif()
++    list(APPEND LIBNexusWidevine_LIBRARIES ${LIBRARY_${_library}})
++endforeach ()
++
++if(EXISTS "${LIBNexusWidevine_LIBRARY}")
++    include(FindPackageHandleStandardArgs)
++
++    set(NexusWidevine_FOUND TRUE)
++
++    find_package_handle_standard_args(LIBNexusWidevine DEFAULT_MSG LIBNexusWidevine_LIBRARY LIBNEXUS_INCLUDE )
++    mark_as_advanced(LIBNexusWidevine_LIBRARY)
++
++    if(NOT TARGET NexusWidevine::NexusWidevine)
++        add_library(NexusWidevine::NexusWidevine SHARED IMPORTED)
++        
++        set_target_properties(NexusWidevine::NexusWidevine PROPERTIES
++                IMPORTED_LINK_INTERFACE_LANGUAGES "C"
++                IMPORTED_LOCATION "${LIBNexusWidevine_LIBRARY}"
++                INTERFACE_INCLUDE_DIRECTORIES "${LIBNexusWidevine_INCLUDE_DIRS}"
++                INTERFACE_LINK_LIBRARIES "${LIBNexusWidevine_LIBRARIES}"
++                INTERFACE_COMPILE_OPTIONS "${LIBNexusWidevine_DEFINITIONS}"
++                IMPORTED_NO_SONAME TRUE
++        )
++    endif()
++endif()
+diff --git a/Provisioning/modules/WidevineProvisioning/CMakeLists.txt b/Provisioning/modules/WidevineProvisioning/CMakeLists.txt
+index af52f52..e09eb99 100644
+--- a/Provisioning/modules/WidevineProvisioning/CMakeLists.txt
++++ b/Provisioning/modules/WidevineProvisioning/CMakeLists.txt
+@@ -1,4 +1,15 @@
+-find_package(Widevine REQUIRED)
++
++find_package(NEXUS)
++if(NEXUS_FOUND)
++    find_package(NXCLIENT)
++    find_package(NexusWidevine)
++    set(WIDEVINE_LIBRARIES "NEXUS::NEXUS" "NXCLIENT::NXCLIENT" "NexusWidevine::NexusWidevine")
++    set(WIDEVINE_INCLUDE_DIRS "NEXUS::NEXUS" "NXCLIENT::NXCLIENT" "NexusWidevine::NexusWidevine")
++    set(WIDEVINE_FLAGS "NEXUS::NEXUS" "NXCLIENT::NXCLIENT" "NexusWidevine::NexusWidevine")
++else()
++    find_package(Widevine REQUIRED)
++endif(NEXUS_FOUND)
++
+ find_package(${NAMESPACE}Cryptalgo REQUIRED)
+ 
+ add_module(WidevineProvisioning
