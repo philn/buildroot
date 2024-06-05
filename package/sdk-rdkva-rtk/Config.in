@@ -1,0 +1,25 @@
+config BR2_PACKAGE_SDK_RDKVA_RTK
+ 	bool "sdk-rdkva-rtk"
+ 	depends on BR2_arm
+ 	select BR2_PACKAGE_HAS_LIBEGL
+ 	select BR2_PACKAGE_HAS_LIBGLES
+ 	select BR2_PACKAGE_HAS_PLAYREADY
+	select BR2_PACKAGE_HAS_WAYLAND_EGL
+ 	help
+ 	  Pre-compiled binaries for a platform
+
+if BR2_PACKAGE_SDK_RDKVA_RTK
+
+config BR2_PACKAGE_PROVIDES_LIBEGL
+ 	default "sdk-rdkva-rtk"
+
+config BR2_PACKAGE_PROVIDES_LIBGLES
+ 	default "sdk-rdkva-rtk"
+
+config BR2_PACKAGE_PROVIDES_PLAYREADY
+ 	default "sdk-rdkva-rtk"
+
+config BR2_PACKAGE_HAS_WAYLAND_EGL
+	bool
+
+endif
