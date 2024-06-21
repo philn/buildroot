@@ -26,11 +26,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_WPEWEBKIT_NEXT),y)
 WPEWEBKIT_VERSION_VALUE = main
-# This is meant to build main from the WebKit repository, but we won't have main on
-# WebPlatformForEmbedded/WPEWebKit repo, so whatever hash we put will fail to download.
-# Give this this a value to indicate that the fail is expected. This version is intended
-# to be used with a local checkout of the WebKit repository.
-WPEWEBKIT_VERSION = invalidhashtofail
+WPEWEBKIT_VERSION = 595cc813addb5104f45a3a3f41e74e1ad9748907
 endif
 
 WPEWEBKIT_SITE = $(call github,WebPlatformForEmbedded,WPEWebKit,$(WPEWEBKIT_VERSION))
