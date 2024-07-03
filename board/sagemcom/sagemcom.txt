@@ -143,3 +143,5 @@ libvpx.so
 libgstwesterossink.so
 libwesteros*
 libstdc++.so
+libcogcore.so
+cog
